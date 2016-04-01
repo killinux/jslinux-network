@@ -1,0 +1,116 @@
+/*
+ * Z-XMPP
+ * A Javascript XMPP client.
+ *
+ * (c) 2010 Matija Folnovic
+ * (c) 2010 Ivan Vucica
+ * License is located in the LICENSE file
+ * in Z-XMPP distribution/repository.
+ * Use not complying to those terms is a
+ * violation of various national and
+ * international copyright laws.
+ */
+
+.zxmpp_bar {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 20px;
+	z-index: 9999;
+
+	background: #ccc;
+	border-left: 1px solid #eee;
+	border-top: 1px solid #eee;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
+	font-size: 8pt;
+	font-family: Arial;
+}
+
+.zxmpp_window {
+	float: right;
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+}
+
+.zxmpp_title {
+	height: 18px;
+	border-left: 1px solid #eee;
+	border-top: 1px solid #eee;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
+	background: #ccc;
+	cursor: default;
+}
+.zxmpp_title div
+{
+	padding: 2px;
+}
+
+.zxmpp_content, .zxmpp_window_heading {
+	border-left: 1px solid #eee;
+	border-top: 1px solid #eee;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
+	background: #ccc;
+	width: 200px;
+	font-size: 8pt;
+	font-family: Arial;
+
+	max-height: 200px;
+	overflow: auto;
+}
+
+.zxmpp_window_msg_composing .zxmpp_content .zxmpp_content_msg:after
+{
+	font-weight: bold;
+	content: "Typing";
+}
+.zxmpp_window_msg_paused .zxmpp_content .zxmpp_content_msg:after
+{
+	font-weight: bold;
+	content: "Thinking";
+}
+.zxmpp_window_msg_gone .zxmpp_content .zxmpp_content_msg:after
+{
+	font-weight: bold;
+	content: "Gone";	
+}
+
+.zxmpp_user {
+	border: 1px solid #ccc;
+	background: #ccc;
+	cursor: default;
+}
+.zxmpp_user:hover {
+	background: #eee;
+	border-left: 1px solid #eee;
+	border-top: 1px solid #eee;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
+}
+
+.zxmpp_statusavail {
+	color: green;
+}
+.zxmpp_statuschat {
+	color: #1f1;
+}
+.zxmpp_statusdnd {
+	color: red;
+}
+.zxmpp_statusaway {
+	color: #f97;
+}
+.zxmpp_statusxa {
+	color: #fa8;
+}
+.zxmpp_statusunavailable {
+	color: #777;
+	display: none;
+}
+.zxmpp_statusundefined {
+	color: yellow; /* make sure it stands out; this is a bug */
+}

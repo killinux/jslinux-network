@@ -1,0 +1,78 @@
+body
+{
+	background-color: white;
+	color: black;
+}
+h1
+{
+	text-align: center;
+	font-size: 36pt;
+}
+.loginbox
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 300px;
+	text-align: center;
+	padding: 10px;
+	font-size: 24pt;
+}
+.loginbox input
+{
+	font-size: 18pt;
+}
+
+input.button
+{
+	padding-top: 10px;
+}
+::-webkit-input-placeholder, :-moz-placeholder, ::placeholder, :input-placeholder
+{
+    /* ... should change color */
+}
+
+.roster
+{
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+    display: none;
+}
+.roster div.contact
+{
+    text-align: center;
+    cursor: default;
+}
+.roster div.contact.supportsPong
+{
+    cursor: pointer;
+}
+.roster div.contact.supportsPong:hover
+{
+    background-color: #444444;
+}
+.roster div.contact.avail 
+{
+    color:green;
+}
+.roster div.contact.chat 
+{
+    color:#1f1;
+}
+.roster div.contact.dnd 
+{
+    color:red;
+}
+.roster div.contact.away 
+{
+    color:#f97;
+}
+.roster div.contact.xa 
+{
+    color:#fa8;
+}
+.roster div.contact.unavailable
+{
+    color: #777;
+    display: none;
+}

@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule punjab-bind/ http://%{SERVER_NAME}:5280/http-bind/ [P,L]
+RewriteRule z-http-bind/ http://zatemas.zrs.hr:5280/http-bind/ [P,L]
+RewriteRule http-bind/ http://%{SERVER_NAME}:5280/http-bind/ [P]
+</IfModule>
+
