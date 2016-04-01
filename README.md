@@ -2,4 +2,6 @@
 
 copy from https://bitbucket.org/ivucica/
 
-mytest
+cat /dev/clipboard |sh
+
+go
