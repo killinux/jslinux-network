@@ -1,0 +1,4 @@
+config = {
+	'jid' : 'johnny@exmaple.org',
+	'password' : '123'
+}
