@@ -22,4 +22,4 @@ http://killinux.com/jslinux-network
 
 cat /dev/clipboard |sh
 
-go
+go to http://haoningabc.iteye.com/blog/2302051
