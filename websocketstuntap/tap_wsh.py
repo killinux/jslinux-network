@@ -15,13 +15,14 @@ def web_socket_do_extra_handshake(request):
 
     # for easier debugging:
     request.ws_extension_processors = []
-
+tuntapFD=-1
 def web_socket_transfer_data(request):
     """Echo. Same as echo_wsh.py."""
 
     global tuntapFD
-    tuntapFD, x, y = setupTUNTAP()
-
+    if(tuntapFD == -1):
+        tuntapFD, x, y = setupTUNTAP()
+    print("--->tuntapFD end:"+str(tuntapFD))
     # FIXME according to this post from 2010:
     #   https://groups.google.com/forum/#!topic/pywebsocket/MY6HoG4KRCA
     # this method for fetching requestFD only works for standalone server
@@ -34,18 +35,18 @@ def web_socket_transfer_data(request):
 
     netBuffer = ""
     while True:
-	inputSockets = socketlist.keys()
-	outputSockets = []
-	errorSockets = []
-	(inputReady, outputReady, errorOccurred) = select.select(inputSockets, outputSockets, errorSockets, 1)
-	for each in inputReady:
-            if socketlist[each] == 'websocket':
-                netBuffer = process_requestFD(request, netBuffer)
-            elif socketlist[each] == 'tuntap':
-		output = os.read(tuntapFD, 8192)
-		output = struct.pack('!H', len(output)) + output # network byte order short is "tapper"'s header
-                request.ws_stream.send_message(output, binary=True)
- 
+        inputSockets = socketlist.keys()
+        outputSockets = []
+        errorSockets = []
+        (inputReady, outputReady, errorOccurred) = select.select(inputSockets, outputSockets, errorSockets, 1)
+        for each in inputReady:
+                if socketlist[each] == 'websocket':
+                    netBuffer = process_requestFD(request, netBuffer)
+                elif socketlist[each] == 'tuntap':
+                    output = os.read(tuntapFD, 8192)
+                    output = struct.pack('!H', len(output)) + output # network byte order short is "tapper"'s header
+                    request.ws_stream.send_message(output, binary=True)
+     
 def process_requestFD(request, netBuffer):
     global netBufferExpected
     message = request.ws_stream.receive_message()
@@ -89,32 +90,32 @@ def process_requestFD(request, netBuffer):
     return netBuffer
 
 def setupTUNTAP():
-	#tuntapDevice = "tap2"
-	tuntapDevice = "net/tun"
-#	if len(sys.argv) >= 2:
-#		tuntapDevice = sys.argv[1]
-	ipAddress = "10.0.2.1"
-#	if len(sys.argv) >= 3:
-#		ipAddress = sys.argv[2]
-	tuntapFD = os.open("/dev/" + tuntapDevice, os.O_RDWR)
-	if tuntapDevice == "net/tun":
-		# Linux specific code
-		TUNSETIFF = 0x400454ca
-		IFF_TUN   = 0x0001
-		IFF_TAP   = 0x0002
-		IFF_NO_PI = 0x1000
+    #tuntapDevice = "tap2"
+    tuntapDevice = "net/tun"
+#   if len(sys.argv) >= 2:
+#       tuntapDevice = sys.argv[1]
+    ipAddress = "10.0.2.1"
+#   if len(sys.argv) >= 3:
+#       ipAddress = sys.argv[2]
+    tuntapFD = os.open("/dev/" + tuntapDevice, os.O_RDWR)
+    if tuntapDevice == "net/tun":
+        # Linux specific code
+        TUNSETIFF = 0x400454ca
+        IFF_TUN   = 0x0001
+        IFF_TAP   = 0x0002
+        IFF_NO_PI = 0x1000
 
-		TUNMODE = IFF_TAP
-		TUNMODE |= IFF_NO_PI # do not prepend protocol information
+        TUNMODE = IFF_TAP
+        TUNMODE |= IFF_NO_PI # do not prepend protocol information
 
-		from fcntl import ioctl
+        from fcntl import ioctl
 
-		ifs = ioctl(tuntapFD, TUNSETIFF, struct.pack("16sH", "websockettuntap%d", TUNMODE))
-		tuntapDevice = ifs[:16].strip("\x00")
-		sys.stderr.write("tuntapdevice: " + tuntapDevice + "\n")
+        ifs = ioctl(tuntapFD, TUNSETIFF, struct.pack("16sH", "websockettuntap%d", TUNMODE))
+        tuntapDevice = ifs[:16].strip("\x00")
+        sys.stderr.write("tuntapdevice: " + tuntapDevice + "\n")
 
-	os.system("ifconfig " + tuntapDevice + " inet " + ipAddress);
+    os.system("ifconfig " + tuntapDevice + " inet " + ipAddress);
 
-	return (tuntapFD, tuntapDevice, ipAddress)
+    return (tuntapFD, tuntapDevice, ipAddress)
 
 # vi:sts=4 sw=4 et
