@@ -25,7 +25,7 @@ cat /dev/clipboard |sh
 go to http://haoningabc.iteye.com/blog/2302051
 
 #install apache rewrite ,php
-ws的ubuntu 64位，试用一年的免费版
+测试，使用aws的ubuntu 64位，试用一年的免费版
 
 #安装apache：
 (http://www.apache.org/dist/apr/)
@@ -35,33 +35,34 @@ ws的ubuntu 64位，试用一年的免费版
    * 修改apr的configure文件
    * 把$RM "$cfgfile" 这个地方，用#注释掉
 * apr
-* ./configure --prefix=/usr/local/apr
-* make
-* make install
-* apr-util:
-* ./configure --prefix=/usr/local/apr-util --with-apr=/usr/local/apr
-* make 
-* make install
+```shell
+./configure --prefix=/usr/local/apr
+make
+make install
+```
+*apr-util:
+```shell
+./configure --prefix=/usr/local/apr-util --with-apr=/usr/local/apr
+make 
+make install
+```
 
 下载pcre
 (http://ftp.exim.llorien.org/pcre/)
 安装
-
-
-*  ./configure --prefix=/usr/local/httpd -with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util --with-pcre=/usr/local/pcre/bin/pcre-config
-* make
-* make install
-
+```shell
+ ./configure --prefix=/usr/local/httpd -with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util --with-pcre=/usr/local/pcre/bin/pcre-config
+make
+make install
+```
 
 #rewrite-模块
-* *cd /opt/httpd/httpd-2.2.31/modules/mappers
+* cd /opt/httpd/httpd-2.2.31/modules/mappers
 * /usr/local/httpd/bin/apxs -i -a -c ./mod_rewrite.c 
 * 之后多了:
 * /usr/local/httpd/modules/mod_rewrite.so
 * 配置文件多了:
 * LoadModule rewrite_module modules/mod_rewrite.so
-
-
 
 
 #安装php
@@ -70,10 +71,11 @@ ws的ubuntu 64位，试用一年的免费版
 * apt-get install libxml2-dev
 * 装php的时候需要指定httpd的路径/usr/local/httpd 
 
-
-* ./configure --prefix=/usr/local/php5 --with-apxs2=/usr/local/httpd/bin/apxs 
-* make
-* make install
+```shell
+./configure --prefix=/usr/local/php5 --with-apxs2=/usr/local/httpd/bin/apxs 
+make
+make install
+```
 
 #httpd.conf
 
