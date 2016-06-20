@@ -4,7 +4,7 @@ var tuntapWS_canSend = false;
 
 function tuntapWS_connect()
 {
-	tuntapWS_connection = new WebSocket('ws://192.168.139.117:3000/tap', []);
+	tuntapWS_connection = new WebSocket('ws://killinux.com:3000/tap', []);
 	console.log("tuntapWS_connect--->");
 	//tuntapWS_connection = new WebSocket('ws://54.238.161.28:3000/tap', []);
 	//tuntapWS_connection = new WebSocket('ws://killinux.com:3000/tap', []);

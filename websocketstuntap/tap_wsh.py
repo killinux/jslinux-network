@@ -94,7 +94,7 @@ def setupTUNTAP():
     tuntapDevice = "net/tun"
 #   if len(sys.argv) >= 2:
 #       tuntapDevice = sys.argv[1]
-    ipAddress = "10.0.2.1"
+    ipAddress = "10.0.2.2"
 #   if len(sys.argv) >= 3:
 #       ipAddress = sys.argv[2]
     tuntapFD = os.open("/dev/" + tuntapDevice, os.O_RDWR)

@@ -14,3 +14,11 @@ VPNed to. While intended for Javascript, remember that anyone could connect
 to this service even without Javascript.
 
 (c) 2013 Ivan Vucica
+
+apt-get  install python-virtualenv  
+virtualenv mysite 
+cd mysite/  
+source bin/activate  
+echo $VIRTUAL_ENV  
+echo $PATH
+pip install mod_pywebsocket 

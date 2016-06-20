@@ -1,7 +1,7 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule "hda(.*).bin" "http://%{SERVER_NAME}/%{REQUEST_URI}/../disk-expander.php?index=$1" [P,L]
-RewriteRule "hdb(.*).bin" "http://%{SERVER_NAME}/%{REQUEST_URI}/../disk-expander.php?index=$1&hdb=true" [P,L]
-RewriteRule "^offlinemanifest.appcache$" "http://%{SERVER_NAME}/%{REQUEST_URI}/../offlinemanifest.php" [P,L]
-RewriteRule "index.html" "http://%{SERVER_NAME}/%{REQUEST_URI}/../index.php" [P,L]
+RewriteRule "hda(.*).bin" "http://%{SERVER_NAME}/%{REQUEST_URI}/../disk-expander.php?index=$1" [NC]
+RewriteRule "hdb(.*).bin" "http://%{SERVER_NAME}/%{REQUEST_URI}/../disk-expander.php?index=$1&hdb=true" [NC]
+RewriteRule "^offlinemanifest.appcache$" "http://%{SERVER_NAME}/%{REQUEST_URI}/../offlinemanifest.php" [NC]
+RewriteRule "index.html" "http://%{SERVER_NAME}/%{REQUEST_URI}/../index.php" [NC]
 </IfModule>
