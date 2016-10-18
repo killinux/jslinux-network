@@ -69,6 +69,7 @@ make install
 
 * wget http://museum.php.net/php5/php-5.4.16.tar.bz2
 * apt-get install libxml2-dev
+* yum install libxml2-devel -y
 * 装php的时候需要指定httpd的路径/usr/local/httpd 
 
 ```shell
