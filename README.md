@@ -1,6 +1,5 @@
 # jslinux-network
 
- https://bitbucket.org/ivucica/
 
 
 #install:
