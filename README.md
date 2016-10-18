@@ -1,6 +1,6 @@
 # jslinux-network
 
-copy from https://bitbucket.org/ivucica/
+ https://bitbucket.org/ivucica/
 
 
 #install:
@@ -118,9 +118,22 @@ RewriteEngine On
 RewriteRule "index.html" "http://%{SERVER_NAME}/%{REQUEST_URI}/../index.php"  [P,L]
 </IfModule>
 ```
+如果使用nginx改造一下
+############################
+        location / {
+            rewrite ^(.*)\.appcache$ $1.php;
+            rewrite hda(.*).bin http://$SERVER_NAME/$REQUEST_URI/../disk-expander.php?index=$1;
+            rewrite hdb(.*).bin http://$SERVER_NAME/$REQUEST_URI/../disk-expander.php?index=$1&hdb=true;
+            rewrite ^offlinemanifest.appcache$  http://$SERVER_NAME/$REQUEST_URI/../offlinemanifest.php;
+            rewrite index.html  http://$SERVER_NAME/$REQUEST_URI/../index.php;
+            root   /var/www;
+            index  index.html index.htm;
+        }
 
 
 
 
 
+######################
+ https://bitbucket.org/ivucica/
 
