@@ -1,0 +1,185 @@
+想重新编译jslinux-network
+的内核，其实就是比fabrice bellard的内核多了个e1000的网卡
+使内核与用户空间通信的netlink socket可用
+测试即是
+ip link可用
+
+关键点是[b]make ARCH=i386  drivers/net/e1000[/b]
+
+
+测试环境32位的centos7：
+[code="java"]
+[root@centos32 linux-2.6.20]# uname -a
+Linux centos32 3.10.0-327.18.2.el7.i686 #1 SMP Fri May 13 02:29:38 UTC 2016 i686 i686 i386 GNU/Linux
+[root@centos32 linux-2.6.20]# cat /etc/redhat-release 
+CentOS Linux release 7.2.1511 (AltArch) 
+[/code]
+
+
+buildroot-2016.08.1.tar.gz
+
+如果是普通的fabrice的内核
+
+2.6.20 + buildroot
+/ # ip link
+[color=red]Cannot open netlink socket: Invalid argument[/color]
+
+bzImage4.0.3 +buildroot
+3个设备，lo，eth0,sit0@NONE
+这个内核比较大，后面放编译方法
+
+
+
+判断是内核的问题导致netlink socket错误
+找遍了.config内核选项，network driver相关的都没有
+其实网卡因为太多相关不在.config里面
+pwd
+/opt/jslinux/kernel/linux-2.6.20
+
+[code="java"]make ARCH=i386  drivers/net/e1000/[/code]
+在网卡目录生成built-in.o
+再编译内核
+[code="java"]time make ARCH=i386 -j16[/code]
+参考《LINUX+2.6内核标准教程》
+生成内核的步骤
+[b]
+1.内核编译的时候会根据arch/i386/kernel/vmLinux.lds
+把所有的buildin编译进内核，生成未压缩的src/vmLinux,连接偏移地址0xc0000000
+[color=red]（这里把e1000的网卡也编译进去了）[/color]
+2.objcopy生成 /arch/i386/boot/compressd/vmlinux.bin 
+gzip生成vmlinux.bin.gz) 
+ld 根据连接脚本vmlinux.scr生成piggy.o
+3.misc.o解压缩的c代码
+head.o汇编为解压缩设置参数和堆栈
+和piggy.o
+ld生成arch/i386/boot/compressed/vmLinux
+4.objcopy 生成 arch/i386/boot/vmLinux.bin
+5.用build将bootsect（512字节），setup（512字节） ，vmLinux.bin生成bzImage
+[/b]
+
+有了bzImage我们就可以用qemu启动了vm了
+[code="java"]
+qemu-system-i386 -kernel  /opt/jslinux/kernel/linux-2.6.20/arch/i386/boot/bzImage -drive file=hda.img.lspci,if=ide,cache=none -append "console=ttyS0 root=/dev/hda rw rdinit=/sbin/init notsc=1"  -boot order=dc,menu=on -net nic,vlan=0,macaddr=52:54:00:12:34:22,model=e1000,addr=08 -net tap,ifname=tap1,script=./if-up,downscript=./if-down -nographic
+[/code]
+ip link不报错了
+
+虽然qemu还是访问不了外网，但是这个额内核已经可以给jslinux-network使用了
+
+
+具体步骤如下
+★★★★
+编译内核：
+linux-2.6.20.tar.gz 
+ls
+linux-2.6.20 tmp/linuxstart-20120111
+
+[code="java"]
+cp tmp/linuxstart-20120111/config_linux-2.6.20 linux-2.6.20/.config
+vim linux-2.6.20/.config
+CONFIG_TUN=y
+[/code]
+添加tun的支持
+
+cd linux-2.6.20
+[code="java"]
+patch -p1 < ../tmp/linuxstart-20120111/patch_linux-2.6.20   
+patching file drivers/char/Kconfig
+patching file drivers/char/Makefile
+patching file drivers/char/jsclipboard.c
+patching file drivers/serial/8250.c
+patching file drivers/ide/ide-probe.c
+
+patch -p1 < /var/www/jslinux_reversed/contrib/patches/2.6.20_common_fixes.patch
+patching file arch/i386/kernel/Makefile
+patching file kernel/mutex.c
+patching file scripts/mod/sumversion.c
+[root@centos32 linux-2.6.20]#
+[/code]
+代码在
+[url]https://github.com/killinux/jslinux_reversed[/url]
+[url]https://github.com/killinux/jslinux-network[/url]
+为了适应本机的
+gcc version 4.8.5 20150623 (Red Hat 4.8.5-4) (GCC) 
+vim Makefile 
+搜索/config %config
+[code="java"]
+config %config: scripts_basic outputmakefile FORCE
+改成
+%config: scripts_basic outputmakefile FORCE
+[/code]
+搜索/\/ %\/
+[code="java"]
+/ %/: prepare scripts FORCE
+改成
+%/: prepare scripts FORCE
+[/code]
+
+[b][color=red]这里最重要[/color][/b]
+[code="java"]make ARCH=i386  drivers/net/e1000/[/code]
+vim .config
+确认 CONFIG_TUN=y是否还在
+如果在 ，就执行
+[code="java"]time make ARCH=i386 -j16[/code]
+
+生成 linux-2.6.20/arch/i386/boot/bzImage
+
+cd ../tmp/linuxstart-20120111/
+
+生成jslinux可用的
+ vim Makefile 
+指定刚才的kernel路径
+修改KERNEL_PATH=../../linux-2.6.20
+
+make kernel 生成vmlinux26.bin
+
+cp vmlinux2.6.bin /var/www/jslinux-network/
+
+vim jslinux-network/jslinux.js
+[code="java"]
+    if (!kernel_name)
+        //kernel_name = "vmlinux-2.6.20.bin";
+        kernel_name = "vmlinux26.bin";
+[/code]
+
+启动websocket的服务端进程，建立tap的通道
+jslinux-network/websocketstuntap/launch.sh 
+
+进入jslinux-network
+[code="java"]cat /dev/clipboard|sh[/code]
+建立tap0
+
+启动web页面上的connect or reconnect websockets
+ping 10.0.2.2
+
+以上是内核编译替换成功了
+下面替换硬盘文件
+
+###################################另外###########
+如果想要带lo,eth0,sit0的的内核，
+把
+[url]http://dl2.iteye.com/upload/attachment/0121/2645/d7cb6c0e-5039-30d7-a08a-49019f17d18c.jpeg[/url]
+保存成.config编译linux-4.0.3的内核得到bzImage即可
+内核的下载地址
+[url]https://www.kernel.org/pub/linux/kernel/v2.6/[/url]
+测试
+[code="java"]
+qemu-system-i386 -kernel bzImage -drive file=root.bin,if=ide,cache=none -append "console=ttyS0 root=/dev/sda rw rdinit=/sbin/init notsc=1"  -boot order=dc,menu=on -net nic,vlan=0,macaddr=52:54:00:12:34:22,model=e1000,addr=08 -net tap,ifname=tap1,script=./if-up,downscript=./if-down -nographic
+[/code]
+进入vm测试
+[code="java"]
+ifconfig eth0 192.168.122.3 netmask 255.255.255.0 
+route add default gw 192.168.122.1
+echo "nameserver 114.114.114.114" >/etc/resolv.conf
+ping www.baidu.com
+[/code]
+
+其中
+[code="java"]
+[root@centos32 kvm]# cat if-up 
+#!/bin/sh
+ip link set tap1 up   
+#brctl addif br0 tap1 
+brctl addif virbr0 tap1
+[/code]
+
+http://haoningabc.iteye.com/blog/2338061
